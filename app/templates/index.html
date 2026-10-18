@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Tableau de bord{% endblock %}
+{% block body %}
+<header class="top">
+  <div>
+    <h1>{{ site }}</h1>
+    <p class="muted" id="updated">Chargement…</p>
+  </div>
+  <div class="top-actions">
+    {% if mail_enabled %}<button class="btn ghost" id="test-mail" type="button">Tester l'e-mail</button>{% endif %}
+    {% if demo %}<button class="btn ghost" id="demo-trigger" type="button">Simuler une intrusion</button>{% endif %}
+    {% if has_logout %}<form method="post" action="{{ url_for('logout') }}"><button class="btn ghost" type="submit">Déconnexion</button></form>{% endif %}
+  </div>
+</header>
+
+{% if notice %}<div class="banner">{{ notice }}</div>{% endif %}
+<div class="banner error hidden" id="error-banner"></div>
+
+<main class="grid">
+  <section class="card" id="alarm-card">
+    <h2>Alarme</h2>
+    <div class="status"><span class="dot" id="alarm-dot"></span><strong id="alarm-text">—</strong></div>
+    <div class="btn-row">
+      <button class="btn" data-level="armed" type="button">Armer</button>
+      <button class="btn" data-level="partial" type="button">Mode partiel</button>
+      <button class="btn danger" data-level="disarmed" type="button">Désarmer</button>
+    </div>
+  </section>
+
+  <section class="card" id="cameras-card">
+    <h2>Caméra</h2>
+    <div id="cameras"><p class="muted">Aucune caméra.</p></div>
+  </section>
+
+  <section class="card wide">
+    <h2>Capteurs et batteries <span class="muted small">(alerte sous {{ battery_warn }} %)</span></h2>
+    <div id="devices"><p class="muted">Chargement…</p></div>
+  </section>
+
+  <section class="card wide">
+    <h2>Derniers événements</h2>
+    <ul class="events" id="events"></ul>
+  </section>
+</main>
+
+<dialog id="pin-dialog">
+  <form method="dialog" class="card">
+    <h2>Code requis</h2>
+    <p class="muted">Saisissez le code pour désarmer l'alarme.</p>
+    <input id="pin-input" type="password" inputmode="numeric" autocomplete="off">
+    <div class="btn-row reverse">
+      <button class="btn danger" value="ok" type="submit">Désarmer</button>
+      <button class="btn ghost" value="cancel" type="submit" formnovalidate>Annuler</button>
+    </div>
+  </form>
+</dialog>
+
+<div class="toast hidden" id="toast"></div>
+<script>window.HC2 = { pinRequired: {{ 'true' if pin_required else 'false' }}, batteryWarn: {{ battery_warn }} };</script>
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+{% endblock %}
